@@ -8,6 +8,14 @@ Java client library for the [mite.de](https://mite.de) time tracking API.
 
 ## Usage
 
+```xml
+<dependency>
+    <groupId>ch.martinelli.oss</groupId>
+    <artifactId>mite-java</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
+
 ```java
 var client = MiteClient.of("your-subdomain", "your-api-key");
 
