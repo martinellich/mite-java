@@ -1,41 +1,77 @@
-mite4java
-=========
+# mite4java
 
-We have developed API to use externally Mite system. Our API can be used to read data from Mite system. Also new
-data can be inserted to Mite syste. We will generate reports from Mite system data.
+Java client library for the [mite.de](https://mite.de) time tracking API.
 
-In each API call we need to pass subdomain and API key of Mite system. The Mite API key is available in My User page of Mite system. Here I have used my test account subdomain "jewelsub" 
-and my api key "7da6ddf5db9d29f"
+## Requirements
 
-Add new entry in Mite System :
-============================
-http://localhost:8080/mite4java/postcustomers.html?subdomain=jewelsub&apikey=7da6ddf5db9d29f
+- Java 25+
 
-http://localhost:8080/mite4java/postservices.html?subdomain=jewelsub&apikey=7da6ddf5db9d29f
+## Usage
 
-http://localhost:8080/mite4java/postprojects.html?subdomain=jewelsub&apikey=7da6ddf5db9d29f
+```java
+var client = MiteClient.of("your-subdomain", "your-api-key");
 
-Export Selected Time Entry to Excel file and download :
-============================================
-First user will connect to Mite by this page. 
+// Account & user
+var account = client.getAccount();
+var myself = client.getMyself();
 
-http://localhost:8080/mite4java/getreport.html
+// Time entries
+var entries = client.getTimeEntries();
+var entry = client.getTimeEntry(123);
 
-When user press connect button it will foward to report page.In the Report page user can select specifiq fields from Time Entry. Then press export button 
-to download xlsx Report. In this page user need to enter subdomain name amd Mite api key to generate report.
+var newEntry = client.createTimeEntry(
+    CreateTimeEntry.builder()
+        .dateAt(LocalDate.now())
+        .minutes(60)
+        .note("Working on feature X")
+        .projectId(456)
+        .serviceId(789)
+        .build()
+);
 
+// Projects, Customers, Services
+var projects = client.getProjects();
+var customers = client.getCustomers();
+var services = client.getServices();
 
-Export Time Entry to Excel file and download :
-============================================
-All Time entry will be downloaded by bowser. To download TimeEntry API use example is 
+// Archived resources
+var archivedProjects = client.getArchivedProjects();
 
-http://localhost:8080/mite4java/gettimeentries.html?subdomain=jewelsub&apikey=7da6ddf5db9d29f
+// Filtering with query parameters
+var filtered = client.getTimeEntries(Map.of(
+    "project_id", "123",
+    "from", "2025-01-01",
+    "to", "2025-12-31"
+));
 
+// Grouped time entries
+var grouped = client.getTimeEntriesGrouped("customer,project");
 
-Read all entry from Mite system :
-===============================
-http://localhost:8080/mite4java/getcustomers.html?subdomain=jewelsub&apikey=7da6ddf5db9d29f
+// Tracker (stopwatch)
+var tracker = client.startTracker(entryId);
+client.stopTracker(entryId);
 
-http://localhost:8080/mite4java/getservices.html?subdomain=jewelsub&apikey=7da6ddf5db9d29f
+// Users (read-only)
+var users = client.getUsers();
 
-http://localhost:8080/mite4java/getprojects.html?subdomain=jewelsub&apikey=7da6ddf5db9d29f
+// Bookmarks (read-only)
+var bookmarks = client.getBookmarks();
+```
+
+## API Coverage
+
+| Resource     | GET | POST | PATCH | DELETE |
+|-------------|-----|------|-------|--------|
+| Account     | x   |      |       |        |
+| Myself      | x   |      |       |        |
+| Time Entries| x   | x    | x     | x      |
+| Tracker     | x   |      | x     | x      |
+| Projects    | x   | x    | x     | x      |
+| Customers   | x   | x    | x     | x      |
+| Services    | x   | x    | x     | x      |
+| Users       | x   |      |       |        |
+| Bookmarks   | x   |      |       |        |
+
+## License
+
+Apache License 2.0
