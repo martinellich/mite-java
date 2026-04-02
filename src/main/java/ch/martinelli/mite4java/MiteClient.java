@@ -2,9 +2,9 @@ package ch.martinelli.mite4java;
 
 import ch.martinelli.mite4java.api.*;
 import ch.martinelli.mite4java.domain.*;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -33,15 +33,14 @@ public final class MiteClient {
     private final String apiKey;
     private final String userAgent;
     private final HttpClient httpClient;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     private MiteClient(String subdomain, String apiKey, String userAgent, HttpClient httpClient) {
         this.baseUrl = "https://%s.mite.de".formatted(subdomain);
         this.apiKey = apiKey;
         this.userAgent = userAgent;
         this.httpClient = httpClient;
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule());
+        this.jsonMapper = JsonMapper.builder().build();
     }
 
     /**
@@ -272,7 +271,7 @@ public final class MiteClient {
 
     private <W, T> List<T> getList(String path, Map<String, String> params, Class<W> wrapperType, Function<W, T> unwrap) {
         var response = execute(buildRequest(path, params).GET().build());
-        JavaType listType = objectMapper.getTypeFactory().constructCollectionType(List.class, wrapperType);
+        JavaType listType = jsonMapper.getTypeFactory().constructCollectionType(List.class, wrapperType);
         List<W> wrappers = deserializeList(response, listType);
         return wrappers.stream().map(unwrap).toList();
     }
@@ -340,8 +339,8 @@ public final class MiteClient {
             throw new MiteApiException(response.statusCode(), response.body());
         }
         try {
-            return objectMapper.readValue(response.body(), type);
-        } catch (IOException e) {
+            return jsonMapper.readValue(response.body(), type);
+        } catch (JacksonException e) {
             throw new MiteApiException("Failed to parse response: " + response.body(), e);
         }
     }
@@ -351,16 +350,16 @@ public final class MiteClient {
             throw new MiteApiException(response.statusCode(), response.body());
         }
         try {
-            return objectMapper.readValue(response.body(), listType);
-        } catch (IOException e) {
+            return jsonMapper.readValue(response.body(), listType);
+        } catch (JacksonException e) {
             throw new MiteApiException("Failed to parse response: " + response.body(), e);
         }
     }
 
     private String serialize(Object body) {
         try {
-            return objectMapper.writeValueAsString(body);
-        } catch (IOException e) {
+            return jsonMapper.writeValueAsString(body);
+        } catch (JacksonException e) {
             throw new MiteApiException("Failed to serialize request body", e);
         }
     }
