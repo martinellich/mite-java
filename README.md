@@ -2,8 +2,6 @@
 
 Java client library for the [mite.de](https://mite.de) time tracking API.
 
-**This project has moved to [https://github.com/martinellich/mite4java/](https://github.com/martinellich/mite4java/)**
-
 ## Requirements
 
 - Java 25+
