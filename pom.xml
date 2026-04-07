@@ -6,7 +6,7 @@
     <groupId>ch.martinelli.oss</groupId>
     <artifactId>mite-java</artifactId>
     <packaging>jar</packaging>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.1</version>
 
     <name>mite-java</name>
     <description>Java API for mite.</description>
