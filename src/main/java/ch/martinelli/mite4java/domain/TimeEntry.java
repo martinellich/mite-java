@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -24,10 +25,25 @@ public record TimeEntry(
         @JsonProperty("customer_name") String customerName,
         @JsonProperty("service_id") Integer serviceId,
         @JsonProperty("service_name") String serviceName,
+        @JsonProperty("started_time") Integer startedTime,
         Tracking tracking,
         @JsonProperty("created_at") OffsetDateTime createdAt,
         @JsonProperty("updated_at") OffsetDateTime updatedAt
 ) {
+    public LocalTime startTime() {
+        if (startedTime == null) {
+            return null;
+        }
+        return LocalTime.of(startedTime / 60, startedTime % 60);
+    }
+
+    public LocalTime endTime() {
+        if (startedTime == null) {
+            return null;
+        }
+        return LocalTime.of(startedTime / 60, startedTime % 60).plusMinutes(minutes);
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Wrapper(@JsonProperty("time_entry") TimeEntry timeEntry) {}
 
