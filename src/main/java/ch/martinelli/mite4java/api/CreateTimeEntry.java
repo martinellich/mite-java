@@ -13,7 +13,8 @@ public record CreateTimeEntry(
         @JsonProperty("user_id") Integer userId,
         @JsonProperty("project_id") Integer projectId,
         @JsonProperty("service_id") Integer serviceId,
-        Boolean locked
+        Boolean locked,
+        @JsonProperty("started_time") Integer startedTime
 ) {
     public record Wrapper(@JsonProperty("time_entry") CreateTimeEntry timeEntry) {}
 
@@ -29,6 +30,7 @@ public record CreateTimeEntry(
         private Integer projectId;
         private Integer serviceId;
         private Boolean locked;
+        private Integer startedTime;
 
         public Builder dateAt(LocalDate dateAt) { this.dateAt = dateAt; return this; }
         public Builder minutes(int minutes) { this.minutes = minutes; return this; }
@@ -37,9 +39,10 @@ public record CreateTimeEntry(
         public Builder projectId(int projectId) { this.projectId = projectId; return this; }
         public Builder serviceId(int serviceId) { this.serviceId = serviceId; return this; }
         public Builder locked(boolean locked) { this.locked = locked; return this; }
+        public Builder startedTime(int startedTime) { this.startedTime = startedTime; return this; }
 
         public CreateTimeEntry build() {
-            return new CreateTimeEntry(dateAt, minutes, note, userId, projectId, serviceId, locked);
+            return new CreateTimeEntry(dateAt, minutes, note, userId, projectId, serviceId, locked, startedTime);
         }
     }
 }

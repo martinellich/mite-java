@@ -77,6 +77,41 @@ class MiteClientTest {
     }
 
     @Test
+    void getTimeEntryWithStartedTime() {
+        var stub = new StubHttpClient("""
+                {"time_entry":{"id":42,"minutes":120,"date_at":"2025-03-15","note":"Coding",
+                "billable":true,"locked":false,"revenue":200.0,"hourly_rate":10000,
+                "user_id":1,"user_name":"Simon","project_id":10,"project_name":"Project A",
+                "customer_id":5,"customer_name":"ACME","service_id":3,"service_name":"Development",
+                "started_time":600,
+                "created_at":"2025-03-15T10:00:00+01:00","updated_at":"2025-03-15T12:00:00+01:00"}}""");
+        var client = MiteClient.of("demo", "test-key", "test", stub);
+
+        var entry = client.getTimeEntry(42);
+
+        assertEquals(600, entry.startedTime());
+        assertEquals(java.time.LocalTime.of(10, 0), entry.startTime());
+        assertEquals(java.time.LocalTime.of(12, 0), entry.endTime());
+    }
+
+    @Test
+    void getTimeEntryWithoutStartedTime() {
+        var stub = new StubHttpClient("""
+                {"time_entry":{"id":42,"minutes":60,"date_at":"2025-03-15","note":"Test",
+                "billable":false,"locked":false,"revenue":null,"hourly_rate":0,
+                "user_id":1,"user_name":"Simon","project_id":null,"project_name":null,
+                "customer_id":null,"customer_name":null,"service_id":null,"service_name":null,
+                "created_at":"2025-03-15T10:00:00+01:00","updated_at":"2025-03-15T10:00:00+01:00"}}""");
+        var client = MiteClient.of("demo", "test-key", "test", stub);
+
+        var entry = client.getTimeEntry(42);
+
+        assertNull(entry.startedTime());
+        assertNull(entry.startTime());
+        assertNull(entry.endTime());
+    }
+
+    @Test
     void getTimeEntriesWithFilter() {
         var stub = new StubHttpClient("[]");
         var client = MiteClient.of("demo", "test-key", "test", stub);
