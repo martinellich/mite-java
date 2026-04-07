@@ -12,7 +12,7 @@ Java client library for the [mite.de](https://mite.de) time tracking API.
 <dependency>
     <groupId>ch.martinelli.oss</groupId>
     <artifactId>mite-java</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 
