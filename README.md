@@ -1,4 +1,4 @@
-# mite4java
+# mite-java
 
 Java client library for the [mite.de](https://mite.de) time tracking API.
 
